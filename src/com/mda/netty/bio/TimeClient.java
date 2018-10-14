@@ -1,6 +1,7 @@
-package client.dalio.netty.bio;
+package com.mda.netty.bio;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -9,22 +10,20 @@ public class TimeClient
 {
     public static void main(String[] args)
     {
-        // 设置端口
         int port = 8080;
         if (args != null && args.length > 0)
         {
             try
             {
-                port = Integer.parseInt(args[0]);
-
+                port = Integer.valueOf(args[0]);
             }
             catch (NumberFormatException e)
             {
                 e.printStackTrace();
             }
+
         }
 
-        // 定义端口，输入和输出
         Socket socket = null;
         BufferedReader in = null;
         PrintWriter out = null;
@@ -34,48 +33,30 @@ public class TimeClient
             socket = new Socket("127.0.0.1", port);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
+            out.println("current time");
 
-            out.println("QUERY TIME ORDER");
-            System.out.println("Send order to server succeed.");
+            System.out.println("Send order succeed");
+            //阻塞
             String resp = in.readLine();
             System.out.println("Now is " + resp);
+
         }
-        catch (Exception ee)
+        catch (IOException e)
         {
+            e.printStackTrace();
         }
         finally
         {
-            if (out != null)
+            try
+            {
+                in.close();
                 out.close();
-
-            if (in != null)
-            {
-                try
-                {
-                    in.close();
-                }
-                catch (Exception ee)
-                {
-                    ee.printStackTrace();
-                }
-                in = null;
+                socket.close();
             }
-
-            if (socket != null)
+            catch (IOException e)
             {
-                try
-                {
-                    socket.close();
-                }
-                catch (Exception ee)
-                {
-                    ee.printStackTrace();
-                }
-                socket = null;
+                e.printStackTrace();
             }
         }
-
     }
 }
-
-
