@@ -26,4 +26,16 @@ public class TimeServerHandler extends SimpleChannelInboundHandler
         ByteBuf resp = Unpooled.wrappedBuffer(currentTime.getBytes());
         ctx.write(resp);
     }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception
+    {
+        ctx.flush();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception
+    {
+        ctx.close();
+    }
 }
