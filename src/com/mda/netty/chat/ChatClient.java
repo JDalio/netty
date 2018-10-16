@@ -42,15 +42,28 @@ public class ChatClient
         {
             group.shutdownGracefully();
         }
-
-
     }
 
     public static void main(String[] args)
     {
+        System.out.println("Powered by Netty4 Java8");
+
+        int port = 8000;
+        if (args != null && args.length > 0)
+        {
+            try
+            {
+                port = Integer.valueOf(args[0]);
+            }
+            catch (NumberFormatException e)
+            {
+                e.printStackTrace();
+            }
+        }
+
         try
         {
-            new ChatClient("127.0.0.1", 8000).run();
+            new ChatClient("39.107.65.148", port).run();
         }
         catch (Exception e)
         {
