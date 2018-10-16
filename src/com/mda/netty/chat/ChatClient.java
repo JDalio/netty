@@ -46,7 +46,6 @@ public class ChatClient
 
     public static void main(String[] args)
     {
-        System.out.println("Powered by Netty4 Java8");
 
         int port = 8000;
         if (args != null && args.length > 0)

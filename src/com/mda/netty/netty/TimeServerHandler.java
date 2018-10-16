@@ -10,27 +10,21 @@ import java.util.Date;
 public class TimeServerHandler extends SimpleChannelInboundHandler
 {
 
+    private int counter;
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception
     {
-        ByteBuf buf = (ByteBuf) msg;
-        byte[] req = new byte[buf.readableBytes()];
-        buf.readBytes(req);
-        String body = new String(req, "UTF-8");
-        System.out.println("Time Server receive: " + body);
+        String body = (String) msg;
+        System.out.println("Time Server receive: " + body + " The counter is " + ++counter);
 
         String currentTime = "QUERY TIME".equalsIgnoreCase(body) ?
                 new Date(System.currentTimeMillis()).toString() :
                 "BAD ORDER";
 
+        currentTime += System.getProperty("line.separator");
         ByteBuf resp = Unpooled.wrappedBuffer(currentTime.getBytes());
-        ctx.write(resp);
-    }
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception
-    {
-        ctx.flush();
+        ctx.writeAndFlush(resp);
     }
 
     @Override

@@ -53,6 +53,7 @@ public class ChatServerHandler extends SimpleChannelInboundHandler<String>
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception
     {
         Channel incoming = ctx.channel();
+        System.out.println("[" + incoming.remoteAddress() + "]" + msg + "\n");
         for (Channel channel : channels)
         {
             if (channel != incoming)

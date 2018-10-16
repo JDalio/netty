@@ -11,31 +11,32 @@ public class TimeClientHandler extends SimpleChannelInboundHandler
 {
     private static final Logger logger = Logger.getLogger(TimeClientHandler.class.getName());
 
-    private final ByteBuf firstmsg;
+    private int counter;
+    private byte[] req;
 
     public TimeClientHandler()
     {
-        byte[] req = "QUERY TIME".getBytes();
-        firstmsg = Unpooled.wrappedBuffer(req);
+        req = ("QUERY TIME" + System.getProperty("line.separator")).getBytes();
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception
     {
-        ctx.writeAndFlush(firstmsg);
+        ByteBuf message = null;
+        for (int i = 0; i < 100; i++)
+        {
+            message = Unpooled.buffer(req.length);
+            message.writeBytes(req);
+            ctx.writeAndFlush(message);
+        }
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception
     {
-        ByteBuf buf = (ByteBuf) msg;
+        String body = (String) msg;
 
-        byte[] resp = new byte[buf.readableBytes()];
-        buf.readBytes(resp);
-
-        String body = new String(resp, "UTF-8");
-
-        System.out.println(body);
+        System.out.println(body + " The counter is: " + ++counter);
     }
 
     @Override

@@ -1,6 +1,8 @@
-package com.mda.netty.netty;
+package com.mda.netty.echo;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -8,42 +10,40 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
-public class TimeServer
+public class EchoServer
 {
-    private class ChildChannelHandler extends ChannelInitializer<SocketChannel>
-    {
-
-        @Override
-        protected void initChannel(SocketChannel socketChannel) throws Exception
-        {
-            //inbound event is processed by the ChildChannelHandler at last
-            socketChannel.pipeline().addLast(new LineBasedFrameDecoder(1024));
-            socketChannel.pipeline().addLast(new StringDecoder());
-            socketChannel.pipeline().addLast(new TimeServerHandler());
-        }
-    }
-
     public void bind(int port) throws Exception
     {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workGroup = new NioEventLoopGroup();
 
-        ServerBootstrap b = null;
-
-
         try
         {
-            b = new ServerBootstrap();
+            ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workGroup)
                     .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG, 1024)
-                    .childHandler(new ChildChannelHandler());
+                    .option(ChannelOption.SO_BACKLOG, 128)
+                    .handler(new LoggingHandler((LogLevel.INFO)))  //TODO
+                    .childHandler(new ChannelInitializer<SocketChannel>()
+                    {
+                        @Override
+                        protected void initChannel(SocketChannel socketChannel) throws Exception
+                        {
+                            ByteBuf delimiter = Unpooled.copiedBuffer("$_".getBytes());
+
+                            socketChannel.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, delimiter));
+                            socketChannel.pipeline().addLast(new StringDecoder());
+                            socketChannel.pipeline().addLast(new EchoServerHandler());
+                        }
+                    });
 
             ChannelFuture f = b.bind(port).sync();
+
             f.channel().closeFuture().sync();
         }
         finally
@@ -56,6 +56,7 @@ public class TimeServer
     public static void main(String[] args)
     {
         int port = 8000;
+
         if (args != null && args.length > 0)
         {
             try
@@ -70,7 +71,7 @@ public class TimeServer
 
         try
         {
-            new TimeServer().bind(port);
+            new EchoServer().bind(port);
         }
         catch (Exception e)
         {
