@@ -12,6 +12,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
@@ -28,7 +29,7 @@ public class EchoServer
             b.group(bossGroup, workGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 128)
-                    .handler(new LoggingHandler((LogLevel.INFO)))  //TODO
+                    .handler(new LoggingHandler(LogLevel.INFO))  //TODO
                     .childHandler(new ChannelInitializer<SocketChannel>()
                     {
                         @Override
@@ -38,6 +39,7 @@ public class EchoServer
 
                             socketChannel.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, delimiter));
                             socketChannel.pipeline().addLast(new StringDecoder());
+                            socketChannel.pipeline().addLast(new StringEncoder());
                             socketChannel.pipeline().addLast(new EchoServerHandler());
                         }
                     });
@@ -53,7 +55,7 @@ public class EchoServer
         }
     }
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         int port = 8000;
 
@@ -69,13 +71,6 @@ public class EchoServer
             }
         }
 
-        try
-        {
-            new EchoServer().bind(port);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        new EchoServer().bind(port);
     }
 }

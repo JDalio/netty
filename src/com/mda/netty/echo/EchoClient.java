@@ -12,6 +12,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 
 public class EchoClient
 {
@@ -32,6 +33,7 @@ public class EchoClient
                             ByteBuf delimiter = Unpooled.wrappedBuffer("$_".getBytes());
                             socketChannel.pipeline().addLast(new DelimiterBasedFrameDecoder(1024, delimiter));
                             socketChannel.pipeline().addLast(new StringDecoder());
+                            socketChannel.pipeline().addLast(new StringEncoder());
                             socketChannel.pipeline().addLast(new EchoClientHandler());
                         }
                     });

@@ -15,7 +15,7 @@ public class EchoClientHandler extends SimpleChannelInboundHandler
     {
         for (int i = 0; i < 10; i++)
         {
-            ctx.writeAndFlush(Unpooled.wrappedBuffer(ECHO_REQ.getBytes()));
+            ctx.writeAndFlush(ECHO_REQ);
         }
     }
 

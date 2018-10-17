@@ -16,8 +16,7 @@ public class EchoServerHandler extends SimpleChannelInboundHandler
 
         System.out.println("This is " + ++counter + " times receive client : [" + body + "]");
         body += "$_";
-        ByteBuf echo = Unpooled.wrappedBuffer(body.getBytes());
-        ctx.writeAndFlush(echo);
+        ctx.writeAndFlush(body);
     }
 
     @Override
