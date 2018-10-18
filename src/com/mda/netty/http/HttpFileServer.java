@@ -10,11 +10,13 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.stream.ChunkedWriteHandler;
 
 public class HttpFileServer
 {
-    private static final String DEFAULT_URL = "src/com/phei/netty";
+    private static final String DEFAULT_PATH = "C:\\Users\\22672\\Documents";
 
     public void run(final int port, final String url) throws Exception
     {
@@ -31,9 +33,15 @@ public class HttpFileServer
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception
                         {
+                            //Decodes ByteBufs into HttpRequests and HttpContents.
                             ch.pipeline().addLast("http-decoder", new HttpRequestDecoder());
+                            //Encodes an HttpResponse or an HttpContent into a ByteBuf.
                             ch.pipeline().addLast("http-encoder", new HttpResponseEncoder());
+                            //A ChannelHandler that aggregates an HttpMessage and its following HttpContents into a single FullHttpRequest or FullHttpResponse
                             ch.pipeline().addLast("http-aggregator", new HttpObjectAggregator(65536));
+                            ch.pipeline().addLast("string-encoder", new StringEncoder());
+                            ch.pipeline().addLast("string-decoder", new StringDecoder());
+                            //A ChannelHandler that adds support for writing a large data stream asynchronously neither spending a lot of memory nor getting OutOfMemoryError. Large data streaming such as file transfer requires complicated state management in a ChannelHandler implementation. ChunkedWriteHandler manages such complicated states so that you can send a large data stream without difficulties.
                             ch.pipeline().addLast("http-chunked", new ChunkedWriteHandler());
                             ch.pipeline().addLast("fileServerHandler", new HttpFileServerHandler(url));
                         }
@@ -64,12 +72,12 @@ public class HttpFileServer
             }
         }
 
-        String url = DEFAULT_URL;
+        String path = DEFAULT_PATH;
         if (args.length > 1)
         {
-            url = args[1];
+            path = args[1];
         }
 
-        new HttpFileServer().run(port, url);
+        new HttpFileServer().run(port, path);
     }
 }
