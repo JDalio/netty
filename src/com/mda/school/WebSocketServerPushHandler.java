@@ -22,7 +22,6 @@ public class WebSocketServerPushHandler implements Runnable
     {
         while (true)
         {
-            System.out.println("thread is running");
             try
             {
                 if (!channelGroup.isEmpty())
@@ -31,7 +30,7 @@ public class WebSocketServerPushHandler implements Runnable
                     channelGroup.writeAndFlush(new TextWebSocketFrame("欢迎使用Netty WebSocket服务，现在时刻：" + new Date().toString()));
                 }
 
-                Thread.sleep(1000);
+                Thread.sleep(5000);
             }
             catch (InterruptedException e)
             {

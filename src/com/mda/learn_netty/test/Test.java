@@ -1,28 +1,42 @@
-package com.mda.netty.test;
+package com.mda.learn_netty.test;
 
-import java.util.Scanner;
+import java.util.Random;
 
+class Initable
+{
+    static final int staticFinal = 47;
+    static final int staticFinal2 = Test.rand.nextInt(1000);
+
+    static
+    {
+        System.out.println("Initializing Initable");
+    }
+}
+
+class Initable2
+{
+    static final int staticFinal = 47;
+    static
+    {
+        System.out.println("Initializing Initable2");
+    }
+}
+
+class Initable3
+{
+    static final int staticFinal = 74;
+    static
+    {
+        System.out.println("Initializing Initable3");
+    }
+}
 public class Test
 {
-    public static void main(String[] args)
+    public static Random rand=new Random(47);
+
+    public static void main(String[] args) throws Exception
     {
-        Washroom washroom = new Washroom();
-
-        new Thread(new ShitTask(washroom,"gouge"),"gouge-thread").start();
-        new Thread(new ShitTask(washroom,"maoye"),"maoye-thread").start();
-        new Thread(new ShitTask(washroom,"wnm"),"wnm-thread").start();
-
-        try
-        {
-            Thread.sleep(1000L);
-        }
-        catch (InterruptedException e)
-        {
-            throw new RuntimeException(e);
-        }
-
-        new Thread(new RepairTask(washroom),"REPAIR-THREAD").start();
-
-
+        Class intclass=Integer.class;
+        intclass=double.class;
     }
 }

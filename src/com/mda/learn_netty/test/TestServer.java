@@ -1,4 +1,4 @@
-package com.mda.netty.test;
+package com.mda.learn_netty.test;
 
 import java.io.IOException;
 import java.net.ServerSocket;

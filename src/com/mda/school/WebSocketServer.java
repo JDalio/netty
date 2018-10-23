@@ -47,7 +47,7 @@ public class WebSocketServer
                         protected void initChannel(SocketChannel ch) throws Exception
                         {
                             ChannelPipeline pipeline = ch.pipeline();
-//                            pipeline.addLast("loging",new LoggingHandler(LogLevel.INFO));
+//                           pipeline.addLast("loging",new LoggingHandler(LogLevel.INFO));
                             //将请求和应答编码或解码为http消息
                             pipeline.addLast("http-codec", new HttpServerCodec());
                             //将http消息多个部分组成http消息
