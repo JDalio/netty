@@ -23,6 +23,12 @@ public final class MarshallingCodecFactory
         configuration.setVersion(5);
         //monitor the reading course
         final Unmarshaller unmarshaller = marshallerFactory.createUnmarshaller(configuration);
+        if (unmarshaller == null)
+        {
+            System.out.println("NullPointer error");
+            System.exit(1);
+        }
+
         return unmarshaller;
     }
 
